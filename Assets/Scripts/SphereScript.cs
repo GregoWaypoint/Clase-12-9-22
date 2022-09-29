@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class SphereScript : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class SphereScript : MonoBehaviour
     public float forceMultiplier;
     public float jumpForce;
     public bool canJump;
+
+    public int itemsCollected;
+    public TextMeshProUGUI score;
 
     void Start()
     {
@@ -39,15 +43,30 @@ public class SphereScript : MonoBehaviour
         {
             canJump = true;
         }
-        if (datosChoque.gameObject.CompareTag("Fall") && datosChoque.gameObject.CompareTag("wall"))
+        if (datosChoque.gameObject.CompareTag("Fall") || datosChoque.gameObject.CompareTag("wall"))
         {
             SceneManager.LoadScene("MinigameStart");
         }
         if (datosChoque.gameObject.CompareTag("win"))
         {
-            SceneManager.LoadScene("WinScreen");
+            if(itemsCollected == 7)
+            {
+                SceneManager.LoadScene("WinScreen");
+            }
+            else
+            {
+                score.text = score.text + "\t te faltan BOBO";
+            }          
         }
        
+    }
+
+    private void OnCollisionExit(Collision datosChoque)
+    {
+        if (datosChoque.gameObject.CompareTag("win"))
+        {
+            score.text = $"Stars {itemsCollected}/7";
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -55,7 +74,11 @@ public class SphereScript : MonoBehaviour
         if (other.gameObject.CompareTag("Star"))
         {
             Destroy(other.gameObject);
-            Debug.Log("no se nada0");
+            itemsCollected ++;
+            score.text = $"Stars {itemsCollected}/7";
+            //score.color = new Color(Random.Range(0, 255), Random.Range(0, 255), Random.Range(0, 255));
+            score.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+            //score.color = Color.red;
         }
         
     }
